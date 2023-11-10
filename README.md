@@ -2,7 +2,7 @@
 
 ## 简介
 
-FakeApiTool 是一个基于 [One API](https://github.com/songquanpeng/one-api) 和 [Pandora](https://chat1.zhile.io/auth) 中的 fakeApi 的工具，旨在更加简便地使用[pandora](https://chat1.zhile.io/auth)资源，使得可以方便地白嫖 chatGPT，本工具是站在巨人的肩膀上，方便大家，麻烦给个不要钱的星星⭐⭐⭐！
+FakeApiTool 是一个基于 [One API](https://github.com/songquanpeng/one-api) 和 [Pandora](https://ai.fakeopen.com/) 中的 [fakeApi](https://ai.fakeopen.com/) 的工具，旨在更加简便地使用[pandora](https://ai.fakeopen.com/)资源，使得可以方便地白嫖 chatGPT，本工具是站在巨人的肩膀上，方便大家，麻烦给个不要钱的星星⭐⭐⭐！
 
 ## 功能特性
 
@@ -41,6 +41,6 @@ nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datas
 ### 想要二开项目的友友们，可以自行更改前后端项目，本人小白，项目写的不太好，还请谅解！
 
 ## 强调
-本项目是站在巨人的肩膀上的，感谢[One API](https://github.com/songquanpeng/one-api)大佬，感谢[Pandora](https://chat1.zhile.io/auth)大佬!，欢迎各位来帮助修改本项目，使得本项目变得更方便，更简单！
+本项目是站在巨人的肩膀上的，感谢[One API](https://github.com/songquanpeng/one-api)大佬，感谢[Pandora](https://ai.fakeopen.com/)大佬!，欢迎各位来帮助修改本项目，使得本项目变得更方便，更简单！
 
 ### 请给我一个免费的⭐吧！！！

@@ -2,7 +2,7 @@
 
 ## 简介
 
-FakeApiTool 是一个基于 One-API 和 Pandora 中的 fakeApi 的工具，旨在更加简便地使用[pandora](https://chat1.zhile.io/auth)资源，使得可以方便地白嫖 chatGPT，本工具是站在巨人的肩膀上，方便大家，麻烦给个不要钱的星星⭐⭐⭐！
+FakeApiTool 是一个基于 [One API](https://github.com/songquanpeng/one-api) 和 [Pandora](https://chat1.zhile.io/auth) 中的 fakeApi 的工具，旨在更加简便地使用[pandora](https://chat1.zhile.io/auth)资源，使得可以方便地白嫖 chatGPT，本工具是站在巨人的肩膀上，方便大家，麻烦给个不要钱的星星⭐⭐⭐！
 
 ## 功能特性
 
@@ -14,15 +14,16 @@ FakeApiTool 是一个基于 One-API 和 Pandora 中的 fakeApi 的工具，旨�
 
 4. **每日自动更新渠道请求地址：** 工具会每日自动更新渠道的请求地址，确保始终使用最新的数据。
 
+## 初始用户名：root 初始密码值:123456
+
 ## 图片展示
 
-# 初始用户名：root 初始密码值:123456
 <img width="1279" alt="91745b7c429630fc0b063a413a7395e" src="https://github.com/Yanyutin753/fakeApiTool-One-API/assets/132346501/5763718c-67c7-47e7-923b-c1bf4d2a0fe4">
 
 # 管理Token,记录token更新时间，自动更新One-APi的渠道
 <img width="1280" alt="daca51e46247e484d249b334cdb6299" src="https://github.com/Yanyutin753/fakeApiTool-One-API/assets/132346501/80f5a931-f6c1-4210-b371-1b7c69fa3876">
 
-### 使用方法
+## 使用方法
 1.请确保部署好了One-API,且One-api接入了Sql,点击[详情](https://github.com/songquanpeng/one-api)
 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/blob/main/simplyDisplay/fakeApiTool-0.0.1-SNAPSHOT.jar)
 3.上传到安装好One-API的服务器上

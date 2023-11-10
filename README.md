@@ -24,7 +24,7 @@ FakeApiTool 是一个基于 [One API](https://github.com/songquanpeng/one-api) �
 
 ## 使用方法
 - 1.请确保部署好了One-API,且One-api接入了Sql,点击[详情](https://github.com/songquanpeng/one-api)
-- 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/blob/main/simplyDisplay/fakeApiTool-0.0.1-SNAPSHOT.jar)
+- 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/blob/main/simplyDeploy/fakeApiTool-0.0.1-SNAPSHOT.jar)
 - 3.上传到安装好One-API的服务器上
 - 4.到达安装好包的路径下
 ```

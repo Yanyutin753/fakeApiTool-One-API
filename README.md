@@ -14,34 +14,33 @@ FakeApiTool 是一个基于 [One API](https://github.com/songquanpeng/one-api) �
 
 4. **每日自动更新渠道请求地址：** 工具会每日自动更新渠道的请求地址，确保始终使用最新的数据。
 
-## 初始用户名：root 初始密码值:123456
+### 初始用户名：root 初始密码值:123456
 
-## 图片展示
-
-<img width="1279" alt="91745b7c429630fc0b063a413a7395e" src="https://github.com/Yanyutin753/fakeApiTool-One-API/assets/132346501/5763718c-67c7-47e7-923b-c1bf4d2a0fe4">
+### 图片展示
+![Image](image/login.png)
 
 # 管理Token,记录token更新时间，自动更新One-APi的渠道
-<img width="1280" alt="daca51e46247e484d249b334cdb6299" src="https://github.com/Yanyutin753/fakeApiTool-One-API/assets/132346501/80f5a931-f6c1-4210-b371-1b7c69fa3876">
+![Image](image/home.png)
 
 ## 使用方法
-1.请确保部署好了One-API,且One-api接入了Sql,点击[详情](https://github.com/songquanpeng/one-api)
-2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/blob/main/simplyDisplay/fakeApiTool-0.0.1-SNAPSHOT.jar)
-3.上传到安装好One-API的服务器上
-4.到达安装好包的路径下
+- 1.请确保部署好了One-API,且One-api接入了Sql,点击[详情](https://github.com/songquanpeng/one-api)
+- 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/blob/main/simplyDisplay/fakeApiTool-0.0.1-SNAPSHOT.jar)
+- 3.上传到安装好One-API的服务器上
+- 4.到达安装好包的路径下
 ```
 # 填写下面路径
 cd （你的安装路径）
 ```
-4.输入下面代码启动
+- 5.输入下面代码启动
 ```
 # 修改下面代码，输入你的oneapi数据库密码
 nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datasource.password=（你的oneapi数据库密码） --spring.datasource.username=oneapi> output.log 2>&1 &
 # 等待一会 放行8008端口即可运行
 ```
 
-# 想要二开项目的友友们，可以自行更改前后端项目，本人小白，项目写的不太好，还请谅解！
+### 想要二开项目的友友们，可以自行更改前后端项目，本人小白，项目写的不太好，还请谅解！
 
-### 强调
-本项目是站在巨人的肩膀上的，感谢[One API](https://github.com/songquanpeng/one-api)大佬，感谢[Pandora](https://chat1.zhile.io/auth)大佬!
+## 强调
+本项目是站在巨人的肩膀上的，感谢[One API](https://github.com/songquanpeng/one-api)大佬，感谢[Pandora](https://chat1.zhile.io/auth)大佬!，欢迎各位来帮助修改本项目，使得本项目变得更方便，更简单！
 
 ### 请给我一个免费的⭐吧！！！

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yyandywt99.fakeapitool.mapper.apiMapper">
+
+    <update id="updateApi">
+        UPDATE channels AS c1 join (select id from channels where base_url like '%fakeopen.com%' limit 1 offset #{count}) as c2
+        on c1.id = c2.id set c1.`key` = #{api} where c1.base_url LIKE '%fakeopen.com%'
+    </update>
+
+
+    <update id="requiredToken">
+        update fakeapitool
+        <set>
+            <if test="value != null and value != ''">
+                value = #{value},
+            </if>
+            <if test="userName != null and userName != ''">
+                userName = #{userName},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            updateTime = now()
+        </set>
+        where name = #{name};
+    </update>
+    <update id="requiredUser">
+        update fakeapitooluser
+        <set>
+            <if test="userName != null and userName != ''">
+                name = #{userName},
+            </if>
+            <if test="password != null and password  != ''">
+                password  = #{password }
+            </if>
+        </set>
+        where id = 1;
+    </update>
+
+
+</mapper>

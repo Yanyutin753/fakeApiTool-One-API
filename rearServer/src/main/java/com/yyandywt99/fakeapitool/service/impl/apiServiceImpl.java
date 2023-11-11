@@ -1,11 +1,28 @@
 package com.yyandywt99.fakeapitool.service.impl;
 
 import com.yyandywt99.fakeapitool.mapper.apiMapper;
+import com.yyandywt99.fakeapitool.pojo.addKeyPojo;
 import com.yyandywt99.fakeapitool.pojo.token;
 import com.yyandywt99.fakeapitool.service.apiService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -31,6 +48,20 @@ public class apiServiceImpl implements apiService {
      */
     @Autowired
     private apiMapper apiMapper;
+
+    @Value("${baseUrlWithoutPath}")
+    private String baseUrlWithoutPath;
+
+    private String session;
+
+    private String getSession(){
+        return this.session;
+    };
+
+    private void setSession(String session){
+        this.session = session;
+    }
+
 
     /**
      *
@@ -111,6 +142,56 @@ public class apiServiceImpl implements apiService {
     }
 
     /**
+     * 添加Key值
+     * 会通过Post方法访问One-Api接口/api/channel/,添加新keys
+     * @return "true"or"false"
+     */
+    public boolean addKey(addKeyPojo addKeyPojo) throws Exception {
+        String url = baseUrlWithoutPath+"/api/channel/";
+        log.info(url);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", 8);
+        jsonObject.put("key", addKeyPojo.getKey());
+        jsonObject.put("name", addKeyPojo.getName());
+        jsonObject.put("base_url", "https://ai.fakeopen.com");
+        jsonObject.put("other", "");
+        jsonObject.put("models", "gpt-3.5-turbo,gpt-3.5-turbo-0301,gpt-3.5-turbo-0613,gpt-3.5-turbo-16k,gpt-3.5-turbo-16k-0613,gpt-3.5-turbo-instruct");
+        jsonObject.put("group", "default");
+        jsonObject.put("model_mapping", "");
+        jsonObject.put("groups", new JSONArray().put("default"));
+        try {
+            HttpClient httpClient = HttpClients.createDefault();
+            HttpPost addPutKey = new HttpPost(url);
+            addPutKey.addHeader("Cookie", getSession());
+            StringEntity entity = new StringEntity(jsonObject.toString());
+            addPutKey.setEntity(entity);
+            // 发送请求
+            HttpResponse response = httpClient.execute(addPutKey);
+            log.info(response.toString());
+            // 处理响应
+            int statusCode = response.getStatusLine().getStatusCode();
+            // 获得响应消息
+            String responseContent = EntityUtils.toString(response.getEntity());
+            // 处理响应数据
+            JSONObject jsonResponse = new JSONObject(responseContent);
+            // 提取返回的数据
+            log.info(jsonResponse.toString());
+            boolean success = jsonResponse.getBoolean("success");
+            log.info(success+"");
+            if (statusCode == 200 && success) {
+                System.out.println("Request was successful");
+                return true;
+            } else {
+                // 请求失败
+                System.out.println("Request failed with status code: " + statusCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * 自动更新每日FakeOPenAI地址
      * @return 每日FakeOPenAI地址
      */
@@ -127,9 +208,8 @@ public class apiServiceImpl implements apiService {
             URL url = new URL(newDateUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-
             int responseCode = conn.getResponseCode();
-
+            //访问Url，防止出现访问错误却修改的情况
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 apiMapper.toUpdateUrl(newDateUrl);
                 return "修改成功";
@@ -155,9 +235,16 @@ public class apiServiceImpl implements apiService {
             List<String> keys = getKeys(tem);
             if(keys != null){
                 apiMapper.requiredToken(tem);
-                deletekeys(tem.getName());
-                addKeys(tem);
-                return "修改成功！";
+                //先删除
+                boolean resDelete = deleteKeys(tem.getName());
+                //后添加
+                boolean resAdd = addKeys(tem);
+                if(resAdd && resDelete){
+                    return "修改成功！";
+                }
+                else {
+                    return "修改失败,检查你的token是否正确！";
+                }
             }
             else {
                 log.info("修改失败");
@@ -171,7 +258,7 @@ public class apiServiceImpl implements apiService {
     }
 
 
-        /**
+    /**
      * 添加token
      * 并添加对应keys
      * @return "添加成功！"or"添加失败,检查你的token是否正确！"
@@ -202,9 +289,19 @@ public class apiServiceImpl implements apiService {
     @Override
     public String deleteToken(String name){
         try {
-            apiMapper.deleteToken(name);
-            deletekeys(name);
-            return "删除成功！";
+            boolean resDelete = false;
+            try {
+                resDelete = deleteKeys(name);
+                apiMapper.deleteToken(name);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            if (resDelete){
+                return "删除成功！";
+            }
+            else {
+                return "未删除成功！";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "删除失败";
@@ -222,7 +319,10 @@ public class apiServiceImpl implements apiService {
             if(keys != null){
                 try {
                     for (String key : keys){
-                        apiMapper.addKeys(token.getName(),key);
+                        addKeyPojo keyPojo = new addKeyPojo();
+                        keyPojo.setKey(key);
+                        keyPojo.setName(token.getName());
+                        addKey(keyPojo);
                     }
                     return true;
                 } catch (Exception e) {
@@ -242,13 +342,46 @@ public class apiServiceImpl implements apiService {
      * one-api里面channels里面删除对应keys
      * @return
      */
-    @Override
-    public void deletekeys(String name) {
+    public boolean deleteKeys(String name) {
         try {
-            apiMapper.deleteKeys(name);
-        } catch (Exception e) {
+            List<Integer> resId = apiMapper.deleteKeys(name);
+            log.info(resId.toString());
+            for (Integer i : resId){
+                String url = baseUrlWithoutPath+"/api/channel/"+i;
+                log.info(url);
+                try {
+                    HttpClient httpClient = HttpClients.createDefault();
+                    HttpDelete deleteKey = new HttpDelete(url);
+                    deleteKey.addHeader("Cookie", getSession());
+                    // 发送请求
+                    HttpResponse response = httpClient.execute(deleteKey);
+                    log.info(response.toString());
+                    // 处理响应
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    // 获得响应数据
+                    String responseContent = EntityUtils.toString(response.getEntity());
+                    // 处理响应数据
+                    JSONObject jsonResponse = new JSONObject(responseContent);
+                    // 提取返回的数据
+                    log.info(jsonResponse.toString());
+                    boolean success = jsonResponse.getBoolean("success");
+                    log.info(success+"");
+                    if (statusCode == 200 && success) {
+                        log.info("Request was successful");
+                    }
+                    else {
+                        log.info("Request failed with status code: " + statusCode);
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     /**
@@ -281,15 +414,75 @@ public class apiServiceImpl implements apiService {
         }
     }
 
+    public String loginOneApi(String userName, String password) throws JSONException {
+        String url = baseUrlWithoutPath+"/api/user/login";
+        // 创建HttpClient实例
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        // 创建Cookie存储
+        CookieStore cookieStore = new BasicCookieStore();
+        // 创建HttpPost请求
+        HttpPost httpPost = new HttpPost(url);
+        // 设置请求头部为 "application/json"
+        httpPost.setHeader("Content-Type", "application/json");
+        // 设置JSON数据
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("username", userName);
+        jsonObject.put("password", password);
+        // 将JSON对象转换为字符串
+        String json = jsonObject.toString();
+        try {
+            String value = "";
+            String sessionValue = "";
+            httpPost.setEntity(new StringEntity(json, "UTF-8"));
+            // 执行HTTP请求
+            HttpResponse response = httpClient.execute(httpPost);
+            log.info(response.toString());
+            StatusLine statusLine = response.getStatusLine();
+            int statusCode = statusLine.getStatusCode();
+            log.info(statusCode+"");
+            Header[] headers = response.getHeaders("Set-Cookie");
+            for (Header header : headers) {
+                String name = header.getName();
+                value = header.getValue();
+                String sessionKey = "session=";
+                int startIndex = value.indexOf(sessionKey) + sessionKey.length();
+                int endIndex = value.indexOf(";", startIndex);
+                //获取到session保存到类
+                sessionValue = sessionKey + value.substring(startIndex, endIndex);
+            }
+            // 关闭HttpClient
+            httpClient.close();
+            return sessionValue;
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 新增保存登录信息
+     * 通过登录One-API获取相应的数据
+     * 请确保相应的UseName和password和One-API保持一致
+     * @return "登录成功！"
+     * "登录成功！但是账号密码和One-API不一致，请修改账号密码！"
+     * "用户名账号错误"
+     */
     @Override
     public String login(String userName, String password) {
         try {
             Integer res = apiMapper.login(userName,password);
-            log.info(res.toString());
-            if(res == 1){
+            String urlRes = loginOneApi(userName, password);
+            setSession(urlRes);
+            if(res == 1 && urlRes != null && urlRes.length() > 0){
                 return "登录成功！";
             }
-            return "用户名账号错误";
+            else if(res == 1){
+                return "登录成功！但是账号密码和One-API不一致，请修改账号密码！";
+            }
+            else {
+                return "用户名账号错误";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "用户名账号错误";

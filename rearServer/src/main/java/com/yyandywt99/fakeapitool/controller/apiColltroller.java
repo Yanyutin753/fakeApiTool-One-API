@@ -69,6 +69,7 @@ public class apiColltroller {
     public Result deleteToken(@RequestParam String name) throws Exception{
         try {
             String res = apiService.deleteToken(name);
+            log.info(res);
             return Result.success(res);
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,7 +136,7 @@ public class apiColltroller {
     public Result login(@RequestParam("userName") String userName,
                         @RequestParam("password") String password) {
         String res = apiService.login(userName,password);
-        if(res.equals("登录成功！")){
+        if(res.contains("登录成功")){
             log.info("登录成功");
             Map<String,Object> chaims = new HashMap<String,Object>();
             chaims.put("id",1);

@@ -37,7 +37,7 @@ public class LogAspect {
                 log.info(e.toString());
             }
         }
-        return Result.error("not login");
+        return Result.error("Not_LOGIN");
 
     }
 }

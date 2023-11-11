@@ -1,5 +1,6 @@
 package com.yyandywt99.fakeapitool.mapper;
 
+import com.yyandywt99.fakeapitool.pojo.addKeyPojo;
 import com.yyandywt99.fakeapitool.pojo.token;
 import org.apache.ibatis.annotations.*;
 
@@ -31,10 +32,10 @@ public interface apiMapper {
             "UNIX_TIMESTAMP(NOW()), 6, 'https://ai.fakeopen.com/', ''," +
             " 0, 0, 'gpt-3.5-turbo,gpt-3.5-turbo-0301,gpt-3.5-turbo-0613,gpt-3.5-turbo-16k,gpt-3.5-turbo-16k-0613'," +
             " 'default', 0, '', 1);")
-    void addKeys(String name,String key);
+    void addKeys(addKeyPojo addKeyPojo);
 
-    @Delete("DELETE FROM channels WHERE name = #{name}")
-    void deleteKeys(String name);
+    @Select("select id from channels where name = #{name}")
+    List<Integer> deleteKeys(String name);
 
     @Insert("insert into fakeapitool (name, value, userName, password, updateTime)" +
             " values (#{name},#{value},#{userName},#{password},now())")

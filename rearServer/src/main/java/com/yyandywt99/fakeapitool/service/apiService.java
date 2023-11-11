@@ -19,8 +19,6 @@ public interface apiService {
 
     boolean addKeys(token token);
 
-    void deletekeys(String name);
-
     List<token> seleteToken(String name);
 
     String requiredUser(String userName,String password);

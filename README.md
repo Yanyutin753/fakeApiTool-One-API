@@ -33,6 +33,12 @@ docker run --network="host" --name one-api -d --restart always -p 3000:3000 -e S
 ## 管理Token,记录token更新时间，自动更新One-APi的渠道
 ![Image](image/home.png)
 
+## 手机端展示
+![925da8b5c5b8e12fff54c35e247c400](https://github.com/Yanyutin753/fakeApiTool-One-API/assets/132346501/b500aa8e-6aa4-419d-9d48-2c7470cadf3f)
+
+![9c43e3dc34d1cc1f501def3a124da77](https://github.com/Yanyutin753/fakeApiTool-One-API/assets/132346501/bb899fb5-52fc-4f6d-80c0-48b0bbe052df)
+
+
 ## 使用方法
 - 1.请确保部署好了One-API,且One-api接入了Sql,点击[详情](https://github.com/songquanpeng/one-api)
 - 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/blob/main/simplyDeploy/fakeApiTool-0.0.1-SNAPSHOT.jar)

@@ -52,6 +52,8 @@ public class apiServiceImpl implements apiService {
     @Value("${baseUrlWithoutPath}")
     private String baseUrlWithoutPath;
 
+    @Value("${baseUrlAutoToken}")
+    private String baseUrlAutoToken;
     private String session;
 
     private String getSession(){
@@ -198,6 +200,7 @@ public class apiServiceImpl implements apiService {
     @Override
     public String getUpdateUrl() throws Exception {
         try {
+            log.info("每天早上八点定时任务启动，定期更改URL");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             // 获取当前时间
             Date currentDate = new Date();
@@ -212,9 +215,11 @@ public class apiServiceImpl implements apiService {
             //访问Url，防止出现访问错误却修改的情况
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 apiMapper.toUpdateUrl(newDateUrl);
+                log.info("修改成功");
                 return "修改成功";
             }
             else {
+                log.info("修改失败");
                 return "修改失败";
             }
         } catch (Exception e) {
@@ -232,8 +237,8 @@ public class apiServiceImpl implements apiService {
     @Override
     public String requiredToken(token tem){
         try {
-            List<String> keys = getKeys(tem);
-            if(keys != null){
+            boolean res = verifyToken(tem);
+            if(res){
                 apiMapper.requiredToken(tem);
                 //先删除
                 boolean resDelete = deleteKeys(tem.getName());
@@ -255,6 +260,71 @@ public class apiServiceImpl implements apiService {
             log.info("修改失败");
             return "修改失败";
         }
+    }
+
+    /**
+     * 测试Token
+     * @return "true(可用)"or"false(不可用)"
+     */
+    private boolean verifyToken(token temTaken) {
+        // 替换为你的unique_name
+        String unique_name = temTaken.getName() + "Test";
+        // 请确保在Java中有token_info这个Map
+        String access_token = temTaken.getValue();
+        // 假设expires_in为0
+        int expires_in = 0;
+        boolean show_conversations = true;
+
+        String url = "https://ai.fakeopen.com/token/register";
+        String data = "unique_name=" + unique_name + "&access_token=" + access_token + "&expires_in=" + expires_in + "&show_conversations=" + show_conversations;
+        String tokenKey = "";
+        try {
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            // 设置请求方法为POST
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+
+            // 发送POST数据
+            OutputStream os = con.getOutputStream();
+            os.write(data.getBytes());
+            os.flush();
+            os.close();
+
+            // 获取响应
+            int responseCode = con.getResponseCode();
+            if (responseCode == 200) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                String responseJson = response.toString();
+                tokenKey = new JSONObject(responseJson).getString("token_key");
+            } else {
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                String errStr = response.toString().replace("\n", "").replace("\r", "").trim();
+                log.info("share token failed: " + errStr);
+            }
+            // 使用正则表达式匹配字符串
+            String shareToken = tokenKey;
+            if (shareToken.matches("^(fk-|pk-).*")) {
+                log.info("测试token可用");
+                return true;
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
@@ -322,6 +392,7 @@ public class apiServiceImpl implements apiService {
                         addKeyPojo keyPojo = new addKeyPojo();
                         keyPojo.setKey(key);
                         keyPojo.setName(token.getName());
+                        //通过One-API接口添加渠道
                         addKey(keyPojo);
                     }
                     return true;
@@ -392,6 +463,17 @@ public class apiServiceImpl implements apiService {
     public List<token> seleteToken(String name) {
         try {
             List<token> res = apiMapper.selectToken(name);
+            return res;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public token selectAccuracyToken(String name) {
+        try {
+            token res = apiMapper.selectAccuracyToken(name);
             return res;
         } catch (Exception e) {
             e.printStackTrace();
@@ -486,6 +568,165 @@ public class apiServiceImpl implements apiService {
         } catch (Exception e) {
             e.printStackTrace();
             return "用户名账号错误";
+        }
+    }
+    /**
+     * 自动更新Token
+     * 更换fakeApiTool里存储的Token
+     * 更换One-API相应的FakeAPI
+     * @return "更新成功" or "更新失败"
+     */
+    @Override
+    public String autoUpdateToken(String name) {
+        List<token> resTokens = apiMapper.selectToken(name);
+        int newToken = 0;
+        for (token token : resTokens) {
+            String url = baseUrlAutoToken+"/get-token";
+            try {
+                // 创建HttpClient实例
+                CloseableHttpClient httpClient = HttpClients.createDefault();
+                // 创建HttpPost请求
+                HttpPost httpPost = new HttpPost(url);
+
+                // 设置请求头部为 "application/json"
+                httpPost.setHeader("Content-Type", "application/json");
+                // 设置JSON数据
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("username", token.getUserName());
+                jsonObject.put("password", token.getPassword());
+                // 将JSON对象转换为字符串
+                String json = jsonObject.toString();
+                try {
+                    String value = "";
+                    httpPost.setEntity(new StringEntity(json, "UTF-8"));
+                    //设置用户代理
+                    String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
+                    httpPost.setHeader("User-Agent", userAgent);
+                    // 执行HTTP请求
+                    HttpResponse response = httpClient.execute(httpPost);
+                    log.info(response.toString());
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    // 获得响应数据
+                    String responseContent = EntityUtils.toString(response.getEntity());
+                    // 处理响应数据
+                    String access_token = null;
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseContent);
+                        // 提取返回的数据
+                        log.info(jsonResponse.toString());
+                        access_token = jsonResponse.getString("token");
+                        httpClient.close();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        httpClient.close();
+                        return e.getMessage();
+                    }
+                    //关闭进程
+                    if (statusCode == 200 && access_token.length() > 400) {
+                        log.info("Request was successful");
+                        //用来防止请求的token出现问题，回退token值
+                        String temToken = token.getValue();
+                        token.setValue(access_token);
+                        //执行修改token操作
+                        if (requiredToken(token).equals("修改成功！")) {
+                            newToken++;
+                        } else {
+                            token.setValue(temToken);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return e.getMessage();
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (newToken == 0) {
+            return "自动修改Token失败！";
+        } else {
+            return "自动修改Token成功：" + newToken + "失败：" + (resTokens.size() - newToken);
+        }
+    }
+
+    /**
+     * 刷新Token
+     * 更换fakeApiTool里存储的Token
+     * 更换One-API相应的FakeAPI
+     * @return "更新成功" or "更新失败"
+     */
+    @Override
+    public boolean autoUpdateSimpleToken(String name) {
+        token token = apiMapper.selectAccuracyToken(name);
+        if(token == null){
+            log.info("未查询到相关数据");
+            return false;
+        }
+        int newToken = 0;
+        String url = baseUrlAutoToken+"/get-token";
+        try {
+            // 创建HttpClient实例
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            // 创建HttpPost请求
+            HttpPost httpPost = new HttpPost(url);
+
+            // 设置请求头部为 "application/json"
+            httpPost.setHeader("Content-Type", "application/json");
+            // 设置JSON数据
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("username", token.getUserName());
+            jsonObject.put("password", token.getPassword());
+            // 将JSON对象转换为字符串
+            String json = jsonObject.toString();
+            try {
+                String value = "";
+                httpPost.setEntity(new StringEntity(json, "UTF-8"));
+                //设置用户代理
+                String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
+                httpPost.setHeader("User-Agent", userAgent);
+                // 执行HTTP请求
+                HttpResponse response = httpClient.execute(httpPost);
+                log.info(response.toString());
+                int statusCode = response.getStatusLine().getStatusCode();
+                // 获得响应数据
+                String responseContent = EntityUtils.toString(response.getEntity());
+                // 处理响应数据
+                String access_token = null;
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseContent);
+                    // 提取返回的数据
+                    log.info(jsonResponse.toString());
+                    access_token = jsonResponse.getString("token");
+                    httpClient.close();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    httpClient.close();
+                    return false;
+                }
+                //关闭进程
+                if (statusCode == 200 && access_token.length() > 400) {
+                    log.info("Request was successful");
+                    //用来防止请求的token出现问题，回退token值
+                    String temToken = token.getValue();
+                    token.setValue(access_token);
+                    //执行修改token操作
+                    if (requiredToken(token).equals("修改成功！")) {
+                        newToken++;
+                    } else {
+                        token.setValue(temToken);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        if (newToken == 0) {
+            return false;
+        } else {
+            return true;
         }
     }
 }

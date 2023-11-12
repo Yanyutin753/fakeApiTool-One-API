@@ -46,7 +46,9 @@ public interface apiMapper {
 
     void requiredToken(token tem);
 
-    //通过构造CONCAT()来连接%值%
+    /**
+     * 通过构造CONCAT()来连接%值%
+     */
     @Select("select name, value, userName, password, updateTime from fakeapitool where name like CONCAT('%', #{name}, '%')")
     List<token> selectToken(String name);
 
@@ -55,4 +57,10 @@ public interface apiMapper {
     @Select("select count(*) from fakeapitooluser" +
             " where name = #{userName} and password = #{password};")
     Integer login(String userName, String password);
+
+    /**
+     * 精确查找
+     */
+    @Select("select name, value, userName, password, updateTime from fakeapitool where name = #{name}")
+    token selectAccuracyToken(String name);
 }

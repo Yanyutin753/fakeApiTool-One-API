@@ -28,7 +28,17 @@ public class apiColltroller {
      * @return
      * 更新fakeapiUrl
      */
-    @Scheduled(cron = "0 8 0 * * ?")
+    @Scheduled(cron = "0 03 10 * * ?")
+    public void autoUpdateUrl() throws Exception{
+        try {
+            String res = apiService.getUpdateUrl();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("更新失败");
+        }
+    }
+
+    @GetMapping("updateUrl")
     public Result toUpdateUrl() throws Exception{
         try {
             String res = apiService.getUpdateUrl();
@@ -38,7 +48,6 @@ public class apiColltroller {
             return Result.error("更新失败");
         }
     }
-
 
     /**
      * @param token

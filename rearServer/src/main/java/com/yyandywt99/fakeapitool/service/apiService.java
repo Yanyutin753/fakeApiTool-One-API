@@ -21,7 +21,13 @@ public interface apiService {
 
     List<token> seleteToken(String name);
 
+    token selectAccuracyToken(String name);
+
     String requiredUser(String userName,String password);
 
     String login(String userName, String password);
+
+    String autoUpdateToken(String name) throws Exception;
+
+    boolean autoUpdateSimpleToken(String name) throws Exception;
 }

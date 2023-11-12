@@ -1,5 +1,5 @@
 # FakeApiTool
-
+##### 请给我点个免费的star⭐吧，十分感谢！
 ## 简介
 
 FakeApiTool 是一个基于 [One API](https://github.com/songquanpeng/one-api) 和 [Pandora](https://ai.fakeopen.com/) 中的 [fakeApi](https://ai.fakeopen.com/) 的工具，旨在更加简便地使用[pandora](https://ai.fakeopen.com/)资源，使得可以方便地白嫖 chatGPT，本工具是站在巨人的肩膀上，方便大家，麻烦给个不要钱的星星⭐⭐⭐！

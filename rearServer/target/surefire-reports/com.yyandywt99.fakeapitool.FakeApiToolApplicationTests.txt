@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.yyandywt99.fakeapitool.FakeApiToolApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.707 s - in com.yyandywt99.fakeapitool.FakeApiToolApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.378 s - in com.yyandywt99.fakeapitool.FakeApiToolApplicationTests

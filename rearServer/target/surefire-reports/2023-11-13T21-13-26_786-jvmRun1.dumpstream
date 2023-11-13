@@ -1,0 +1,29 @@
+# Created at 2023-11-13T21:13:30.357
+TestSet has not finished before stream error has appeared >> initializing exit by non-null configuration: null
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readInt(DataInputStream.java:397)
+	at org.apache.maven.surefire.booter.MasterProcessCommand.decode(MasterProcessCommand.java:115)
+	at org.apache.maven.surefire.booter.CommandReader$CommandRunnable.run(CommandReader.java:391)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+
+
+# Created at 2023-11-13T21:13:31.746
+Unexpected IOException with stream: 2023-11-13 21:13:31.745  INFO 5400 --- [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+
+
+# Created at 2023-11-13T21:13:32.952
+Unexpected IOException with stream: 2023-11-13 21:13:32.951  INFO 5400 --- [           main] c.y.f.FakeApiToolApplicationTests        : Started FakeApiToolApplicationTests in 5.083 seconds (JVM running for 5.955)
+
+
+# Created at 2023-11-13T21:13:32.984
+Unexpected IOException: 5,1,com.yyandywt99.fakeapitool.FakeApiToolApplicationTests,contextLoads,null,null,null
+
+
+# Created at 2023-11-13T21:13:33.382
+Unexpected IOException: 6,1,com.yyandywt99.fakeapitool.FakeApiToolApplicationTests,contextLoads,null,null,null
+
+
+# Created at 2023-11-13T21:13:33.385
+Unexpected IOException: 2,1,org.apache.maven.surefire.junitplatform.JUnitPlatformProvider,com.yyandywt99.fakeapitool.FakeApiToolApplicationTests,null,null,null
+
+

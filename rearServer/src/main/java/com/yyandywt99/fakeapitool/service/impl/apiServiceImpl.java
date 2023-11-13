@@ -375,7 +375,7 @@ public class apiServiceImpl implements apiService {
     @Override
     public String deleteToken(String name){
         if(!existSession()){
-            return "添加失败,session已过期，请重新登录";
+            return "删除失败,session已过期，请重新登录";
         }
         try {
             boolean resDelete = false;
@@ -389,7 +389,7 @@ public class apiServiceImpl implements apiService {
                 return "删除成功！";
             }
             else {
-                return "未删除成功！";
+                return "删除失败！";
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -65,6 +65,12 @@ public class apiServiceImpl implements apiService {
     }
 
 
+    public boolean existSession(){
+        if(getSession() == null && getSession().length() == 0){
+            return false;
+        }
+        return true;
+    }
     /**
      *
      * @param temTaken
@@ -149,6 +155,9 @@ public class apiServiceImpl implements apiService {
      * @return "true"or"false"
      */
     public boolean addKey(addKeyPojo addKeyPojo) throws Exception {
+        if(!existSession()){
+            return false;
+        }
         String url = baseUrlWithoutPath+"/api/channel/";
         log.info(url);
         JSONObject jsonObject = new JSONObject();
@@ -161,12 +170,13 @@ public class apiServiceImpl implements apiService {
         jsonObject.put("group", "default");
         jsonObject.put("model_mapping", "");
         jsonObject.put("groups", new JSONArray().put("default"));
+        // 将JSON对象转换为字符串
+        String json = jsonObject.toString();
         try {
             HttpClient httpClient = HttpClients.createDefault();
             HttpPost addPutKey = new HttpPost(url);
             addPutKey.addHeader("Cookie", getSession());
-            StringEntity entity = new StringEntity(jsonObject.toString());
-            addPutKey.setEntity(entity);
+            addPutKey.setEntity(new StringEntity(json, "UTF-8"));
             // 发送请求
             HttpResponse response = httpClient.execute(addPutKey);
             log.info(response.toString());
@@ -236,6 +246,9 @@ public class apiServiceImpl implements apiService {
      */
     @Override
     public String requiredToken(token tem){
+        if(!existSession()){
+            return "修改失败,session已过期，请重新登录";
+        }
         try {
             boolean res = verifyToken(tem);
             if(res){
@@ -331,22 +344,25 @@ public class apiServiceImpl implements apiService {
     /**
      * 添加token
      * 并添加对应keys
-     * @return "添加成功！"or"添加失败,检查你的token是否正确！"
+     * @return "添加成功！"or"添加失败,检查你的token是否正确或登录是否过期！"
      */
     @Override
     public String addToken(token token) {
+        if(!existSession()){
+            return "添加失败,session已过期，请重新登录";
+        }
         try {
             if(addKeys(token)){
                 apiMapper.addToken(token);
                 return "添加成功！";
             }
             else {
-                return "添加失败,检查你的token是否正确！";
+                return "添加失败,检查你的token是否正确或登录是否过期！";
             }
         } catch (Exception e) {
             e.printStackTrace();
             log.info("添加失败");
-            return "添加失败,检查你的token是否正确！";
+            return "添加失败,检查你的token是否正确或登录是否过期！";
         }
 
     }
@@ -358,6 +374,9 @@ public class apiServiceImpl implements apiService {
      */
     @Override
     public String deleteToken(String name){
+        if(!existSession()){
+            return "添加失败,session已过期，请重新登录";
+        }
         try {
             boolean resDelete = false;
             try {
@@ -384,6 +403,9 @@ public class apiServiceImpl implements apiService {
      */
     @Override
     public boolean addKeys(token token){
+        if(!existSession()){
+            return false;
+        }
         try {
             List<String> keys = getKeys(token);
             if(keys != null){
@@ -414,6 +436,9 @@ public class apiServiceImpl implements apiService {
      * @return
      */
     public boolean deleteKeys(String name) {
+        if(!existSession()){
+            return false;
+        }
         try {
             List<Integer> resId = apiMapper.deleteKeys(name);
             log.info(resId.toString());
@@ -578,6 +603,9 @@ public class apiServiceImpl implements apiService {
      */
     @Override
     public String autoUpdateToken(String name) {
+        if(!existSession()){
+            return "添加失败,session已过期，请重新登录";
+        }
         List<token> resTokens = apiMapper.selectToken(name);
         int newToken = 0;
         for (token token : resTokens) {
@@ -657,6 +685,9 @@ public class apiServiceImpl implements apiService {
      */
     @Override
     public boolean autoUpdateSimpleToken(String name) {
+        if(!existSession()){
+            return false;
+        }
         token token = apiMapper.selectAccuracyToken(name);
         if(token == null){
             log.info("未查询到相关数据");
@@ -679,7 +710,6 @@ public class apiServiceImpl implements apiService {
             // 将JSON对象转换为字符串
             String json = jsonObject.toString();
             try {
-                String value = "";
                 httpPost.setEntity(new StringEntity(json, "UTF-8"));
                 //设置用户代理
                 String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";

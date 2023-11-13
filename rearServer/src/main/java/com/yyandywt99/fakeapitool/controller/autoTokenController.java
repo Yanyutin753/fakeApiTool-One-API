@@ -44,7 +44,7 @@ public class autoTokenController {
         try {
             boolean res = apiService.autoUpdateSimpleToken(name);
             token tem = apiService.selectAccuracyToken(name);
-            if(tem != null){
+            if(tem != null && res){
                 String resToken = tem.getValue();
                 if(resToken.length() > 0 && res ){
                     return Result.success(tem);
@@ -53,6 +53,6 @@ public class autoTokenController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.error("刷新Token失败");
+        return Result.error("刷新Token失败,请尝试重新登录！");
     }
 }

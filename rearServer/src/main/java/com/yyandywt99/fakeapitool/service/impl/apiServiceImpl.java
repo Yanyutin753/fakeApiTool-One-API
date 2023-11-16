@@ -13,7 +13,9 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -604,57 +606,118 @@ public class apiServiceImpl implements apiService {
             return "用户名账号错误";
         }
     }
+
+//    /**
+//     * 自动更新Token方法
+//     * 通过 自己用python搭建的网站baseUrlAutoToken+"/get-token 拿到token
+//     * 更换fakeApiTool里存储的Token
+//     */
+//    public String updateToken(token token){
+//        String url = baseUrlAutoToken+"/get-token";
+//        try {
+//            // 创建HttpClient实例
+//            CloseableHttpClient httpClient = HttpClients.createDefault();
+//            // 创建HttpPost请求
+//            HttpPost httpPost = new HttpPost(url);
+//
+//            // 设置请求头部为 "application/json"
+//            httpPost.setHeader("Content-Type", "application/json");
+//            // 设置JSON数据
+//            JSONObject jsonObject = new JSONObject();
+//            jsonObject.put("username", token.getUserName());
+//            jsonObject.put("password", token.getPassword());
+//            // 将JSON对象转换为字符串
+//            String json = jsonObject.toString();
+//            try {
+//                String value = "";
+//                httpPost.setEntity(new StringEntity(json, "UTF-8"));
+//                //设置用户代理
+//                String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
+//                httpPost.setHeader("User-Agent", userAgent);
+//                // 执行HTTP请求
+//                HttpResponse response = httpClient.execute(httpPost);
+//                log.info(response.toString());
+//                int statusCode = response.getStatusLine().getStatusCode();
+//                // 获得响应数据
+//                String responseContent = EntityUtils.toString(response.getEntity());
+//                // 处理响应数据
+//                String access_token = null;
+//                try {
+//                    JSONObject jsonResponse = new JSONObject(responseContent);
+//                    // 提取返回的数据
+//                    log.info(jsonResponse.toString());
+//                    access_token = jsonResponse.getString("token");
+//                    httpClient.close();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                    httpClient.close();
+//                }
+//                //关闭进程
+//                if (statusCode == 200 && access_token.length() > 400) {
+//                    log.info("Request was successful");
+//                    //用来防止请求的token出现问题，回退token值
+//                    return access_token;
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return null;
+//    }
+
+    /**
+     * 自动更新Token方法
+     * 通过https://ai.fakeopen.com/auth/login拿到token
+     * 更换fakeApiTool里存储的Token
+     */
     public String updateToken(token token){
-        String url = baseUrlAutoToken+"/get-token";
+        String url = "https://ai.fakeopen.com/auth/login";
         try {
             // 创建HttpClient实例
             CloseableHttpClient httpClient = HttpClients.createDefault();
             // 创建HttpPost请求
             HttpPost httpPost = new HttpPost(url);
 
-            // 设置请求头部为 "application/json"
-            httpPost.setHeader("Content-Type", "application/json");
-            // 设置JSON数据
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("username", token.getUserName());
-            jsonObject.put("password", token.getPassword());
-            // 将JSON对象转换为字符串
-            String json = jsonObject.toString();
+            // 使用MultipartEntityBuilder构建表单数据
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addTextBody("username", token.getUserName(), ContentType.TEXT_PLAIN);
+            builder.addTextBody("password", token.getPassword(), ContentType.TEXT_PLAIN);
+
+            // 设置请求实体
+            httpPost.setEntity(builder.build());
+
+            //设置用户代理
+            String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
+            httpPost.setHeader("User-Agent", userAgent);
+
+            // 执行HTTP请求
+            HttpResponse response = httpClient.execute(httpPost);
+            log.info(response.toString());
+            int statusCode = response.getStatusLine().getStatusCode();
+            // 获得响应数据
+            String responseContent = EntityUtils.toString(response.getEntity());
+            // 处理响应数据
+            String access_token = null;
             try {
-                String value = "";
-                httpPost.setEntity(new StringEntity(json, "UTF-8"));
-                //设置用户代理
-                String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36";
-                httpPost.setHeader("User-Agent", userAgent);
-                // 执行HTTP请求
-                HttpResponse response = httpClient.execute(httpPost);
-                log.info(response.toString());
-                int statusCode = response.getStatusLine().getStatusCode();
-                // 获得响应数据
-                String responseContent = EntityUtils.toString(response.getEntity());
-                // 处理响应数据
-                String access_token = null;
-                try {
-                    JSONObject jsonResponse = new JSONObject(responseContent);
-                    // 提取返回的数据
-                    log.info(jsonResponse.toString());
-                    access_token = jsonResponse.getString("token");
-                    httpClient.close();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    httpClient.close();
-                }
-                //关闭进程
-                if (statusCode == 200 && access_token.length() > 400) {
-                    log.info("Request was successful");
-                    //用来防止请求的token出现问题，回退token值
-                    return access_token;
-                }
-            } catch (Exception e) {
+                JSONObject jsonResponse = new JSONObject(responseContent);
+                // 提取返回的数据
+                log.info(jsonResponse.toString());
+                access_token = jsonResponse.getString("access_token");
+                httpClient.close();
+            } catch (JSONException e) {
                 e.printStackTrace();
+                httpClient.close();
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+            //关闭进程
+            if (statusCode == 200 && access_token.length() > 400) {
+                log.info("Request was successful");
+                //用来防止请求的token出现问题，回退token值
+                return access_token;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

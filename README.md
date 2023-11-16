@@ -41,15 +41,23 @@ docker run --network="host" --name one-api -d --restart always -p 3000:3000 -e S
 
 ## 使用方法
 - 1.请确保部署好了One-API,且One-API接入了Sql,点击[详情](https://github.com/songquanpeng/one-api)
-- 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/tree/main/simplyDeploy)，共有两个文件
+- 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/tree/main/simplyDeploy)，jar包
 - 3.上传到安装好One-API的服务器上
 - 4.到达安装好包的路径下
 ```
+#先拿到管理员权限
+sudo su -
+
+#提示你输入密码进行确认。输入密码并按照提示完成验证。
 # 填写下面路径
 cd （你的安装路径）
 ```
 - 5.输入下面代码启动（要先有python和java环境哦）
 ```
+#安装 OpenJDK 11：
+sudo apt install openjdk-11-jdk
+安装完成后，可以通过运行以下命令来验证 JDK 安装：
+java -version
 
 # 修改下面代码，填写你的oneapi数据库密码、你的One-API部署网址
 # 注意填写是没有括号的

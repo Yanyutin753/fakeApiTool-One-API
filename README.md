@@ -50,13 +50,10 @@ cd （你的安装路径）
 ```
 - 5.输入下面代码启动（要先有python和java环境哦）
 ```
-# 安装pandora-chatgpt插件
-pip install pandora-chatgpt
-# 先运行python代码（端口号为8082）
-nohup python3 app.py
-#开放端口号8082，用于后面的更新token
-# 修改下面代码，输入你的oneapi数据库密码、你的部署网址和你的刚刚python启动的IP地址
-nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datasource.password=（你的oneapi数据库密码） --spring.datasource.username=oneapi --baseUrlWithoutPath=(http/https://你的网址的ip+端口号) --baseUrlAutoToken=(http/https://你的Python网址的ip+端口号):8082 > output.log 2>&1 &
+
+# 修改下面代码，填写你的oneapi数据库密码、你的One-API部署网址
+# 注意填写是没有括号的
+nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datasource.password=（你的oneapi数据库密码）--baseUrlWithoutPath=(http/https://你的网址的ip+端口号) > output.log 2>&1 &
 # 等待一会 放行8008端口即可运行
 ```
 

@@ -61,7 +61,7 @@ java -version
 
 # 修改下面代码，填写你的oneapi数据库密码、你的One-API部署网址
 # 注意填写是没有括号的
-nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datasource.password=（你的oneapi数据库密码）--baseUrlWithoutPath=(http/https://你的网址的ip+端口号) > output.log 2>&1 &
+nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datasource.username=oneapi --spring.datasource.password=（你的oneapi数据库密码）--baseUrlWithoutPath=(http/https://你的网址的ip+端口号) > output.log 2>&1 &
 # 等待一会 放行8008端口即可运行
 ```
 

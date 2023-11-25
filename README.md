@@ -39,25 +39,55 @@ docker run --network="host" --name one-api -d --restart always -p 3000:3000 -e S
 ![2328207f725c73109302c74e046605f](https://github.com/Yanyutin753/fakeApiTool-One-API/assets/132346501/ac4eebdc-7e9a-49f9-bfa2-6fef077f929d)
 
 
-## 使用方法
+# 使用方法
+
+## java部署
 - 1.请确保部署好了One-API,且One-API接入了Sql,点击[详情](https://github.com/songquanpeng/one-api)
-- 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/tree/main/simplyDeploy)，共有两个文件
+- 2.下载[启动包](https://github.com/Yanyutin753/fakeApiTool-One-API/tree/main/simplyDeploy)，jar包
 - 3.上传到安装好One-API的服务器上
 - 4.到达安装好包的路径下
 ```
+#先拿到管理员权限
+sudo su -
+
+#提示你输入密码进行确认。输入密码并按照提示完成验证。
 # 填写下面路径
 cd （你的安装路径）
 ```
 - 5.输入下面代码启动（要先有python和java环境哦）
 ```
-# 安装pandora-chatgpt插件
-pip install pandora-chatgpt
-# 先运行python代码（端口号为8082）
-nohup python3 app.py
-#开放端口号8082，用于后面的更新token
-# 修改下面代码，输入你的oneapi数据库密码、你的部署网址和你的刚刚python启动的IP地址
-nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datasource.password=（你的oneapi数据库密码） --spring.datasource.username=oneapi --baseUrlWithoutPath=(http/https://你的网址的ip+端口号) --baseUrlAutoToken=(http/https://你的Python网址的ip+端口号):8082 > output.log 2>&1 &
+#安装 OpenJDK 11：
+sudo apt install openjdk-11-jdk
+安装完成后，可以通过运行以下命令来验证 JDK 安装：
+java -version
+
+# 修改下面代码，填写你的oneapi数据库密码、你的One-API部署网址
+# 注意填写是没有括号的
+nohup java -jar fakeApiTool-0.0.1-SNAPSHOT.jar --server.port=8008 --spring.datasource.username=oneapi --spring.datasource.password=（你的oneapi数据库密码）--baseUrlWithoutPath=(http/https://你的网址的ip+端口号) > output.log 2>&1 &
 # 等待一会 放行8008端口即可运行
+```
+
+## docker部署
+### 环境变量
+
+- SERVER_PORT: 服务器端口号（例如：8008）
+- SPRING_DATASOURCE_PASSWORD: 数据库密码（使用你的 oneapi 密码）
+- SPRING_DATASOURCE_USERNAME: 数据库用户名（使用你的数据库表名 oneapi）
+- SPRING_DATASOURCE_URL: 数据库连接 URL（默认填：jdbc:mysql://localhost:3306/oneapi）
+- BASE_URL_WITHOUT_PATH: 基础 URL（例如：http(https)://你部署的one-api的id+端口号）
+
+## 部署代码
+```
+# 拉取镜像
+docker pull yangclivia/fakeapitool:latest
+# 修改环境变量启动容器
+docker run -d --restart=always --name fakeApiTool --net=host \
+    yangclivia/fakeapitool:latest \
+    --server.port=8008 \
+    --spring.datasource.password=（你的（oneapi密码）） \
+    --spring.datasource.username=（你的数据库表名（oneapi）） \
+    --spring.datasource.url=（jdbc:mysql://localhost:3306/oneapi） \
+    --baseUrlWithoutPath=（http(https)://你的one-api的id+端口号）
 ```
 
 ### 想要二开项目的友友们，可以自行更改前后端项目，本人小白，项目写的不太好，还请谅解！

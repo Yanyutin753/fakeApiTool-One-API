@@ -95,7 +95,7 @@ public class apiColltroller {
     public Result requiredToken(@RequestBody token token){
         try {
             String res = apiService.requiredToken(token);
-            if(res.equals("添加成功！")){
+            if(res.equals("修改成功！")){
                 return Result.success(res);
             }
             else{

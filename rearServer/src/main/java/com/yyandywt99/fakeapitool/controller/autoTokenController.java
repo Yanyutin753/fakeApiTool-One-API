@@ -27,7 +27,7 @@ public class autoTokenController {
      * @throws Exception
      */
     @Scheduled(cron = "0 3 0 */5 * ?")
-    public Result toUpdateToken() throws Exception{
+    public Result toUpdateToken(){
         try {
             String res = apiService.autoUpdateToken("");
             if(res.contains("自动修改Token成功")){
@@ -40,7 +40,7 @@ public class autoTokenController {
     }
 
     @GetMapping("updateToken")
-    public Result toUpdateToken(@RequestParam("name") String name) throws Exception{
+    public Result toUpdateToken(@RequestParam("name") String name){
         try {
             boolean res = apiService.autoUpdateSimpleToken(name);
             token tem = apiService.selectAccuracyToken(name);

@@ -54,8 +54,8 @@ public class apiServiceImpl implements apiService {
     @Value("${baseUrlWithoutPath}")
     private String baseUrlWithoutPath;
 
-    @Value("${baseUrlAutoToken}")
-    private String baseUrlAutoToken;
+//    @Value("${baseUrlAutoToken}")
+//    private String baseUrlAutoToken;
     private String session;
 
     private String getSession(){
@@ -168,7 +168,16 @@ public class apiServiceImpl implements apiService {
         jsonObject.put("name", addKeyPojo.getName());
         jsonObject.put("base_url", "https://ai.fakeopen.com");
         jsonObject.put("other", "");
-        jsonObject.put("models", "gpt-3.5-turbo,gpt-3.5-turbo-0301,gpt-3.5-turbo-0613,gpt-3.5-turbo-16k,gpt-3.5-turbo-16k-0613,gpt-3.5-turbo-instruct");
+        jsonObject.put("models", "gpt-3.5-turbo,gpt-3.5-turbo-0301,gpt-3.5-turbo-0613," +
+                "gpt-3.5-turbo-16k,gpt-3.5-turbo-16k-0613,gpt-3.5-turbo-instruct,gpt-4," +
+                "gpt-4-0314,gpt-4-0613,gpt-4-32k,gpt-4-32k-0314,gpt-4-32k-0613," +
+                "text-embedding-ada-002,text-davinci-003,text-davinci-002," +
+                "text-curie-001,text-babbage-001,text-ada-001,text-moderation-latest," +
+                "text-moderation-stable,text-davinci-edit-001,code-davinci-edit-001," +
+                "claude-instant-1,claude-2,ERNIE-Bot,ERNIE-Bot-turbo,ERNIE-Bot-4," +
+                "Embedding-V1,PaLM-2,chatglm_turbo,chatglm_pro,chatglm_std,chatglm_lite" +
+                ",qwen-turbo,qwen-plus,text-embedding-v1,SparkDesk,embedding-bert-512-v1" +
+                ",embedding_s1_v1,semantic_similarity_s1_v1");
         jsonObject.put("group", "default");
         jsonObject.put("model_mapping", "");
         jsonObject.put("groups", new JSONArray().put("default"));

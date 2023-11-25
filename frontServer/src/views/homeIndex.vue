@@ -257,11 +257,10 @@
           <van-cell-group inset>
             <van-field
               v-model="apiToken"
-              rows="13"
-              autosize
+              rows="5"
               label="OpenAi的Token"
               type="textarea"
-              maxlength="10000"
+              maxlength="5000"
               placeholder="请填写OpenAi的Token"
               show-word-limit
             />
@@ -321,11 +320,10 @@
           <van-cell-group inset>
             <van-field
               v-model="apiToken"
-              rows="17"
-              autosize
+              rows="5"
               label="OpenAi的Token"
               type="textarea"
-              maxlength="10000"
+              maxlength="5000"
               placeholder="请填写OpenAi的Token"
               show-word-limit
             />
@@ -425,11 +423,11 @@
           <van-cell-group inset>
             <van-field
               v-model="apiToken"
-              rows="12"
+              rows="5"
               autosize
               label="OpenAi的Token"
               type="textarea"
-              maxlength="10000"
+              maxlength="5000"
               placeholder="请填写OpenAi的Token"
               show-word-limit
             />
